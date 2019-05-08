@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# creating user_videos table
 class CreateUserVideos < ActiveRecord::Migration[5.2]
   def change
     create_table :user_videos do |t|
