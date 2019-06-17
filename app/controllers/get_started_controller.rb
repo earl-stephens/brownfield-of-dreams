@@ -1,4 +1,6 @@
+# frozen_string_literal: true
+
+# getting started controller
 class GetStartedController < ApplicationController
-  def show
-  end
+  def show; end
 end

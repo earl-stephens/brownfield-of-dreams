@@ -1,8 +1,8 @@
+# frozen_string_literal: true
+
+# application controller
 class ApplicationController < ActionController::Base
   helper_method :current_user
-  helper_method :find_bookmark
-  helper_method :list_tags
-  helper_method :tutorial_name
 
   add_flash_types :success
 
@@ -10,15 +10,12 @@ class ApplicationController < ActionController::Base
     @current_user ||= User.find(session[:user_id]) if session[:user_id]
   end
 
-  def find_bookmark(id)
-    current_user.user_videos.find_by(video_id: id)
-  end
-
-  def tutorial_name(id)
-    Tutorial.find(id).title
-  end
-
-  def four_oh_four
-    raise ActionController::RoutingError.new('Not Found')
+  def active_current_user?
+    if current_user.status == 'active'
+    else
+      flash[:notice] = 'Activate account before proceeding.'\
+                       'Please check your email.'
+      redirect_back fallback_location: { action: 'show', id: current_user.id }
+    end
   end
 end

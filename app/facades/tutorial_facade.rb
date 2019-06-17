@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# class level documentation comment
 class TutorialFacade < SimpleDelegator
   def initialize(tutorial, video_id = nil)
     super(tutorial)
@@ -5,7 +8,10 @@ class TutorialFacade < SimpleDelegator
   end
 
   def current_video
-    if @video_id
+    if videos.count.zero?
+      videos << Video.new(title: 'More to come', description: "It's a secret")
+      videos.first
+    elsif @video_id
       videos.find(@video_id)
     else
       videos.first
@@ -17,7 +23,7 @@ class TutorialFacade < SimpleDelegator
   end
 
   def play_next_video?
-    !(current_video.position >= maximum_video_position)
+    current_video.position < maximum_video_position
   end
 
   private
@@ -27,6 +33,15 @@ class TutorialFacade < SimpleDelegator
   end
 
   def maximum_video_position
-    videos.max_by { |video| video.position }.position
+    if Video.order(position: :desc).first.position.nil?
+      new_position = Video.order(position: :desc)
+                          .second[:position] + 1
+      Video.order(position: :desc).first.update(position: new_position)
+    end
+    find_max_vid_position
+  end
+
+  def find_max_vid_position
+    Video.order(position: :desc).first.position
   end
 end
